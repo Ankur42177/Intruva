@@ -1,0 +1,32 @@
+{
+  "name": "@intruva/extension",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Intruva for Chrome: prompt optimization and on-device security preflight inside the ChatGPT, Claude, and Gemini composers.",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "build:dev": "node scripts/build.mjs --dev",
+    "zip": "node scripts/build.mjs && node scripts/zip.mjs",
+    "icons": "node scripts/render-icons.mjs",
+    "test": "npm run test:unit && npm run test:e2e",
+    "test:unit": "vitest run",
+    "test:e2e": "node scripts/build.mjs --dev && node test/e2e/run.mjs",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@intruva/engine": "*"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.3.0",
+    "esbuild": "^0.25.0",
+    "happy-dom": "^20.0.0",
+    "prosemirror-model": "^1.25.0",
+    "prosemirror-schema-basic": "^1.2.0",
+    "prosemirror-state": "^1.4.0",
+    "prosemirror-view": "^1.40.0",
+    "quill": "^2.0.3",
+    "typescript": "^5",
+    "vitest": "^4.1.0"
+  }
+}
