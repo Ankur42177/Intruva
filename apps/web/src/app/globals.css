@@ -1,0 +1,357 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   Intruva design tokens (plan §15.1)
+   Dark, ambient "liquid glass" over a quiet aurora background.
+   All component styling should come from these tokens — no ad-hoc colours.
+   ========================================================================== */
+
+@theme {
+  /* Typography */
+  --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-instrument), ui-serif, Georgia, serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SFMono-Regular", monospace;
+
+  /* Ink (backgrounds & neutrals) */
+  --color-ink-950: #05060b;
+  --color-ink-900: #0a0c14;
+  --color-ink-850: #0e111b;
+  --color-ink-800: #131726;
+  --color-ink-700: #1c2135;
+  --color-ink-600: #2a3049;
+
+  /* Text */
+  --color-fg: #eef0f7;
+  --color-fg-soft: #b4b8cc;
+  --color-fg-muted: #8a8fa8;
+  --color-fg-faint: #5d627a;
+
+  /* Brand accents */
+  --color-iris-200: #d9d3ff;
+  --color-iris-300: #bcb2ff;
+  --color-iris-400: #9d8fff;
+  --color-iris-500: #7f6cff;
+  --color-iris-600: #6551f0;
+  --color-aqua-300: #9cf0f2;
+  --color-aqua-400: #5ce1e6;
+  --color-aqua-500: #2cc6cf;
+  --color-peach-300: #ffc9a8;
+  --color-peach-400: #ffab7d;
+
+  /* Semantic */
+  --color-ok: #5fe0a4;
+  --color-ok-soft: rgb(95 224 164 / 0.12);
+  --color-warn: #f3c56a;
+  --color-warn-soft: rgb(243 197 106 / 0.12);
+  --color-risk: #ff8a7a;
+  --color-risk-soft: rgb(255 138 122 / 0.12);
+  --color-crit: #ff5d73;
+  --color-info: #86c8ff;
+  --color-info-soft: rgb(134 200 255 / 0.12);
+
+  /* Radii */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.25rem;
+  --radius-2xl: 1.75rem;
+  --radius-3xl: 2.25rem;
+
+  /* Motion */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-glide: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Animations */
+  --animate-drift-a: drift-a 28s ease-in-out infinite alternate;
+  --animate-drift-b: drift-b 34s ease-in-out infinite alternate;
+  --animate-shimmer: shimmer 2.4s linear infinite;
+  --animate-caret: caret 1s steps(1) infinite;
+  --animate-pulse-soft: pulse-soft 2.2s ease-in-out infinite;
+
+  @keyframes drift-a {
+    0% { transform: translate3d(-6%, -4%, 0) scale(1); }
+    100% { transform: translate3d(8%, 6%, 0) scale(1.12); }
+  }
+  @keyframes drift-b {
+    0% { transform: translate3d(6%, 4%, 0) scale(1.08); }
+    100% { transform: translate3d(-8%, -6%, 0) scale(0.96); }
+  }
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+  @keyframes caret {
+    0%, 50% { opacity: 1; }
+    50.01%, 100% { opacity: 0; }
+  }
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes pulse-soft {
+    0%, 100% { opacity: 0.55; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.15); }
+  }
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+
+:root {
+  color-scheme: dark;
+  --glass-blur: 22px;
+  --glass-sat: 160%;
+  --header-h: 4rem;
+}
+
+html {
+  background: var(--color-ink-950);
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  color: var(--color-fg);
+  font-family: var(--font-sans);
+  font-feature-settings: "ss01", "cv11";
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: rgb(157 143 255 / 0.4);
+  color: #fff;
+}
+
+/* Visible, consistent focus for keyboard users (plan §15.8). */
+:where(a, button, input, textarea, select, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-aqua-400);
+  outline-offset: 3px;
+  border-radius: 0.6rem;
+}
+
+/* Scrollbars that match the glass surfaces */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(255 255 255 / 0.14) transparent;
+}
+
+/* ==========================================================================
+   Liquid-glass surfaces (plan §15.1, §15.7)
+   Layered: translucent fill + backdrop blur + specular top edge + soft shadow.
+   ========================================================================== */
+
+@utility glass {
+  position: relative;
+  background:
+    linear-gradient(180deg, rgb(255 255 255 / 0.075), rgb(255 255 255 / 0.025)) padding-box,
+    rgb(14 17 27 / 0.55);
+  border: 1px solid rgb(255 255 255 / 0.09);
+  box-shadow:
+    inset 0 1px 0 0 rgb(255 255 255 / 0.09),
+    inset 0 -1px 0 0 rgb(255 255 255 / 0.02),
+    0 1px 2px rgb(0 0 0 / 0.3),
+    0 24px 48px -24px rgb(0 0 0 / 0.6);
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+}
+
+@utility glass-strong {
+  position: relative;
+  background:
+    linear-gradient(180deg, rgb(255 255 255 / 0.1), rgb(255 255 255 / 0.035)) padding-box,
+    rgb(16 19 31 / 0.72);
+  border: 1px solid rgb(255 255 255 / 0.12);
+  box-shadow:
+    inset 0 1px 0 0 rgb(255 255 255 / 0.14),
+    0 2px 4px rgb(0 0 0 / 0.3),
+    0 40px 80px -32px rgb(0 0 0 / 0.75);
+  backdrop-filter: blur(28px) saturate(170%);
+  -webkit-backdrop-filter: blur(28px) saturate(170%);
+}
+
+@utility glass-subtle {
+  background: rgb(255 255 255 / 0.035);
+  border: 1px solid rgb(255 255 255 / 0.07);
+  box-shadow: inset 0 1px 0 0 rgb(255 255 255 / 0.05);
+}
+
+/* Specular sheen that follows the pointer (set --mx/--my from JS). */
+@utility sheen {
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background: radial-gradient(
+      420px circle at var(--mx, 50%) var(--my, -20%),
+      rgb(255 255 255 / 0.08),
+      transparent 45%
+    );
+    opacity: var(--sheen-o, 0);
+    transition: opacity 300ms var(--ease-glide);
+  }
+  &:hover::before {
+    --sheen-o: 1;
+  }
+}
+
+/* Gradient hairline border for focal surfaces. */
+@utility ring-aurora {
+  &::after {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    padding: 1px;
+    border-radius: inherit;
+    pointer-events: none;
+    background: linear-gradient(
+      135deg,
+      rgb(188 178 255 / 0.7),
+      rgb(92 225 230 / 0.35) 40%,
+      rgb(255 255 255 / 0.04) 60%,
+      rgb(255 171 125 / 0.45)
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+  }
+}
+
+@utility text-aurora {
+  background: linear-gradient(100deg, var(--color-iris-300), var(--color-aqua-300) 45%, var(--color-peach-300));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@utility shimmer-text {
+  background: linear-gradient(
+    90deg,
+    var(--color-fg-muted) 0%,
+    var(--color-fg) 45%,
+    var(--color-fg-muted) 90%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: var(--animate-shimmer);
+}
+
+@utility skeleton {
+  background: linear-gradient(90deg, rgb(255 255 255 / 0.04), rgb(255 255 255 / 0.09), rgb(255 255 255 / 0.04));
+  background-size: 200% 100%;
+  animation: var(--animate-shimmer);
+  border-radius: var(--radius-sm);
+}
+
+@utility noise {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+/* ==========================================================================
+   Fallbacks & preferences (plan §15.7, §15.8)
+   ========================================================================== */
+
+/* No backdrop-filter support → solid, still-legible surfaces. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass,
+  .glass-strong {
+    background: var(--color-ink-850);
+  }
+}
+
+/* Smaller screens: lighter blur for performance. */
+@media (max-width: 640px) {
+  :root {
+    --glass-blur: 14px;
+    --glass-sat: 140%;
+  }
+}
+
+/* System reduced motion OR the in-app low-motion toggle. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+html[data-motion="reduced"] *,
+html[data-motion="reduced"] *::before,
+html[data-motion="reduced"] *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+}
+html[data-motion="reduced"] {
+  scroll-behavior: auto;
+}
+
+/* ==========================================================================
+   Prompt editor highlight layer (mirror technique)
+   ========================================================================== */
+
+.editor-layer {
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  line-height: 1.75;
+  letter-spacing: -0.005em;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: normal;
+  tab-size: 2;
+}
+
+.mark-secret,
+.mark-pii,
+.mark-injection,
+.mark-info {
+  color: transparent;
+  border-radius: 4px;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+.mark-secret {
+  background: rgb(255 93 115 / 0.22);
+  box-shadow: inset 0 -2px 0 rgb(255 93 115 / 0.85);
+}
+.mark-pii {
+  background: rgb(243 197 106 / 0.18);
+  box-shadow: inset 0 -2px 0 rgb(243 197 106 / 0.8);
+}
+.mark-injection {
+  background: rgb(255 138 122 / 0.16);
+  box-shadow: inset 0 -2px 0 rgb(255 138 122 / 0.75);
+  text-decoration: underline wavy rgb(255 138 122 / 0.75);
+  text-underline-offset: 4px;
+}
+.mark-info {
+  background: rgb(134 200 255 / 0.12);
+  box-shadow: inset 0 -2px 0 rgb(134 200 255 / 0.6);
+}
+
+/* Diff tokens — never colour alone: added text is underlined, removed is struck. */
+.diff-add {
+  background: rgb(95 224 164 / 0.14);
+  color: #d6fbe9;
+  text-decoration: underline;
+  text-decoration-color: rgb(95 224 164 / 0.6);
+  text-underline-offset: 3px;
+  border-radius: 3px;
+}
+.diff-del {
+  background: rgb(255 138 122 / 0.14);
+  color: #ffd9d3;
+  text-decoration: line-through;
+  text-decoration-color: rgb(255 138 122 / 0.8);
+  border-radius: 3px;
+}
