@@ -70,7 +70,7 @@ export function ClarifyFlow({
   };
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[1fr_15rem]">
+    <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_15rem]">
       <GlassCard strong aurora className="overflow-hidden p-5 sm:p-7">
         <div className="pointer-events-none absolute -left-24 -top-24 size-72 rounded-full bg-[radial-gradient(circle,rgb(127_108_255/0.2),transparent_65%)] blur-2xl" />
 

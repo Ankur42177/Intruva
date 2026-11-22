@@ -169,7 +169,7 @@ export function DiagnosisView({
       )}
 
       {/* Insight cards */}
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <Insight i={3} icon={<Target className="size-4" />} title="Intent" tone="iris">
           <p className="text-sm leading-relaxed text-fg-soft">{analysis.intent}</p>
         </Insight>
@@ -218,7 +218,7 @@ export function DiagnosisView({
                   <Pill tone={f.source === "answer" ? "aqua" : "neutral"} className="shrink-0 px-2 py-0 text-[0.65rem]">
                     {f.source === "answer" ? "your answer" : "from prompt"}
                   </Pill>
-                  <span>{f.text}</span>
+                  <span className="min-w-0 [overflow-wrap:anywhere]">{f.text}</span>
                 </li>
               ))}
             </ul>
@@ -331,7 +331,7 @@ function Insight({
     neutral: "bg-white/[0.06] text-fg-soft",
   }[tone];
   return (
-    <m.section {...rise(i)} className="glass rounded-2xl p-5">
+    <m.section {...rise(i)} className="glass min-w-0 rounded-2xl p-5 [overflow-wrap:anywhere]">
       <div className="mb-3 flex items-center gap-2.5">
         <span className={cn("flex size-7 items-center justify-center rounded-lg", toneCls)} aria-hidden>
           {icon}
@@ -349,7 +349,7 @@ function BulletList({ items }: { items: string[] }) {
       {items.map((t) => (
         <li key={t} className="flex gap-2 text-sm leading-relaxed text-fg-soft">
           <span className="mt-2 size-1 shrink-0 rounded-full bg-fg-muted" aria-hidden />
-          {t}
+          <span className="min-w-0 [overflow-wrap:anywhere]">{t}</span>
         </li>
       ))}
     </ul>

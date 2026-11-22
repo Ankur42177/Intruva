@@ -90,7 +90,7 @@ export function SecurityPanel({
                   </button>
                 )}
               </div>
-              <p className="mt-2 font-mono text-xs text-fg-soft">
+              <p className="mt-2 font-mono text-xs text-fg-soft [overflow-wrap:anywhere]">
                 <span className="sr-only">Evidence (masked): </span>
                 {f.masked_evidence}
               </p>

@@ -324,7 +324,7 @@ export function Workspace() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-            className="grid gap-5 lg:grid-cols-[minmax(0,21rem)_minmax(0,1fr)] lg:gap-6"
+            className="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,21rem)_minmax(0,1fr)] lg:gap-6"
           >
             {/* Original prompt — always accessible (plan §A5) */}
             <aside aria-label="Your original prompt" className="lg:sticky lg:top-20 lg:self-start">
