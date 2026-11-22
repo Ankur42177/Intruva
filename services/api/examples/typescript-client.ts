@@ -30,9 +30,13 @@ try {
   console.log(`Task: ${analysis.task_type} (${analysis.task_confidence}), overall score ${analysis.scores.overall.toFixed(2)}`);
   for (const q of analysis.questions) console.log(`  ? [${q.field}] ${q.question}`);
 
-  // 3. Optimize: answer the first question, skip the rest (skipped → labelled assumptions).
-  const answers = analysis.questions.map((q, i) =>
-    i === 0 ? { field: q.field, kind: "answered" as const, value: "p95 under 300 ms" } : { field: q.field, kind: "skipped" as const },
+  // 3. Optimize: answer the questions you can, skip the rest (skipped → labelled assumptions).
+  const known: Record<string, string> = {
+    environment: "Python 3.12, FastAPI, Postgres 16 on AWS",
+    expected_behavior: "Checkout p95 latency under 300 ms, as before the deploy",
+  };
+  const answers = analysis.questions.map((q) =>
+    known[q.field] ? { field: q.field, kind: "answered" as const, value: known[q.field] } : { field: q.field, kind: "skipped" as const },
   );
   const result = await intruva.optimize({ prompt: safePrompt, mode: "deep", target_model: "claude", answers });
   console.log(`\n${result.optimized}\n`);

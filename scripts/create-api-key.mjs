@@ -2,7 +2,13 @@
 /**
  * Create an Intruva API key.
  *
- *   node scripts/create-api-key.mjs <label> [--registry <file>] [--json]
+ *   node scripts/create-api-key.mjs <label> [--registry <file>] [--json | --entry-only] [--no-registry]
+ *
+ * Non-interactive / CI use (stdout = secret value, stderr = plaintext key):
+ *   node scripts/create-api-key.mjs acme --entry-only --no-registry 2>acme.key \
+ *     | npx wrangler secret put API_KEYS --cwd services/api
+ * (That replaces API_KEYS with this single entry. To keep existing keys, upload
+ * the whole registry file instead — see the printed command.)
  *
  * Prints the raw key ONCE (give it to the customer over a secure channel; it is
  * not stored anywhere) and its SHA-256 hash. The Worker only ever stores the
@@ -31,18 +37,26 @@ const flag = (name) => {
   args.splice(i, 2);
   return v;
 };
-const asJson = args.includes("--json");
-if (asJson) args.splice(args.indexOf("--json"), 1);
+const boolFlag = (name) => {
+  const i = args.indexOf(name);
+  if (i === -1) return false;
+  args.splice(i, 1);
+  return true;
+};
+const asJson = boolFlag("--json");
+const entryOnly = boolFlag("--entry-only");
+const noRegistry = boolFlag("--no-registry");
 const registry = path.resolve(flag("--registry") ?? path.join(root, "services/api/.api-keys"));
 const label = args[0];
 
-if (!label || !/^[A-Za-z0-9_.-]{1,64}$/.test(label)) {
-  console.error("Usage: node scripts/create-api-key.mjs <label> [--registry <file>] [--json]");
+if (args.length !== 1 || args.some((a) => a.startsWith("--")) ||
+    !label || !/^[A-Za-z0-9_.-]{1,64}$/.test(label)) {
+  console.error("Usage: node scripts/create-api-key.mjs <label> [--registry <file>] [--json | --entry-only] [--no-registry]");
   console.error("  <label>: 1–64 chars of A–Z a–z 0–9 _ . -   e.g. acme-pilot");
   process.exit(1);
 }
 
-const existing = existsSync(registry) ? readFileSync(registry, "utf8") : "";
+const existing = !noRegistry && existsSync(registry) ? readFileSync(registry, "utf8") : "";
 if (existing.split("\n").some((l) => l.trim().startsWith(`${label}:`))) {
   console.error(`Label "${label}" already exists in ${registry}. Revoke it first or pick another label.`);
   process.exit(1);
@@ -53,14 +67,22 @@ const hash = createHash("sha256").update(key).digest("hex");
 const entry = `${label}:${hash}`;
 
 const header = existing ? "" : "# Intruva API key registry (label:sha256). Upload with `wrangler secret put API_KEYS`.\n";
-appendFileSync(registry, `${header}${entry}\n`, { mode: 0o600 });
+if (!noRegistry) appendFileSync(registry, `${header}${entry}\n`, { mode: 0o600 });
 
-const rel = path.relative(process.cwd(), registry) || registry;
-const apiDir = path.relative(process.cwd(), path.join(root, "services/api")) || ".";
+const shortPath = (p) => {
+  const r = path.relative(process.cwd(), p);
+  return !r ? "." : r.startsWith("..") ? p : r;
+};
+const rel = shortPath(registry);
+const apiDir = shortPath(path.join(root, "services/api"));
 const putCmd = `npx wrangler secret put API_KEYS --cwd "${apiDir}" < "${rel}"`;
 
-if (asJson) {
-  console.log(JSON.stringify({ label, key, hash, entry, registry, command: putCmd }, null, 2));
+if (entryOnly) {
+  // stdout: exactly the secret value for this key; stderr: the plaintext key (shown once).
+  process.stdout.write(`${entry}\n`);
+  process.stderr.write(`${key}\n`);
+} else if (asJson) {
+  console.log(JSON.stringify({ label, key, hash, entry, registry: noRegistry ? null : registry, command: putCmd }, null, 2));
 } else {
   console.log(`
 API key created for "${label}"
@@ -71,7 +93,7 @@ API key created for "${label}"
   SHA-256 hash (what the Worker stores):
     ${hash}
 
-  Registry entry appended to ${rel}:
+  Registry entry (the API_KEYS secret line)${noRegistry ? "" : ` — appended to ${rel}`}:
     ${entry}
 
 Upload the full registry as the Worker secret (replaces the previous value):
