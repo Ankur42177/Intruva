@@ -105,7 +105,7 @@ if [[ -f "$API_DIR/pyproject.toml" || -f "$API_DIR/requirements.txt" ]]; then
   if ! is_running "$API_PID"; then
     command -v python3 >/dev/null 2>&1 || fail "python3 is required for services/api"
     port_in_use "$API_PORT" && fail "API port $API_PORT is in use. Set API_PORT=<n>."
-    info "Starting API on :$API_PORT…"
+    info "Starting API on :${API_PORT}…"
     (
       cd "$API_DIR"
       [[ -d .venv ]] || python3 -m venv .venv
@@ -133,6 +133,8 @@ if [[ "$MODE" == "prod" ]]; then
   ok "Build complete → apps/web/out"
   CMD=(npx --yes serve@14 out -l "$PORT" --no-clipboard)
 else
+  info "Packaging MCP server downloads…"
+  node scripts/bundle-downloads.mjs >"$RUN_DIR/downloads.log" 2>&1 || warn "MCP downloads not generated (see $RUN_DIR/downloads.log)"
   CMD=(npx next dev -p "$PORT")
 fi
 
@@ -141,7 +143,7 @@ if (( FOREGROUND )); then
   exec "${CMD[@]}"
 fi
 
-info "Starting web app ($MODE) on :$PORT…"
+info "Starting web app ($MODE) on :${PORT}…"
 nohup "${CMD[@]}" >"$WEB_LOG" 2>&1 &
 echo $! >"$WEB_PID"
 echo "$PORT" >"$RUN_DIR/web.port"
