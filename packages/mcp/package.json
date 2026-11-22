@@ -1,0 +1,45 @@
+{
+  "name": "intruva-mcp",
+  "version": "0.1.0",
+  "description": "Intruva MCP server: diagnose, clarify, optimize, and security-scan prompts from any MCP client. Runs locally; nothing leaves your machine.",
+  "type": "module",
+  "bin": {
+    "intruva-mcp": "dist/index.js"
+  },
+  "main": "dist/index.js",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "npm run build && node --import tsx --test test/*.test.ts",
+    "start": "node dist/index.js",
+    "prepack": "npm run build",
+    "prepublishOnly": "npm test"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "prompt",
+    "prompt-engineering",
+    "prompt-security",
+    "secrets",
+    "prompt-injection",
+    "intruva"
+  ],
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "@intruva/engine": "*",
+    "@modelcontextprotocol/sdk": "^1.32.2",
+    "@types/node": "^20",
+    "esbuild": "^0.28.2",
+    "tsx": "^4.20.0",
+    "typescript": "^5",
+    "zod": "^4.6.7"
+  }
+}

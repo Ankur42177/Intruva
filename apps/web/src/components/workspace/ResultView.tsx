@@ -278,7 +278,7 @@ export function ResultView({
         </div>
       </m.div>
 
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         {/* Changes */}
         <m.section {...rise(2)} aria-labelledby="changes" className="glass rounded-2xl p-5">
           <h3 id="changes" className="text-sm font-medium text-fg">

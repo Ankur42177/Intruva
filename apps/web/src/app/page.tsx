@@ -1,15 +1,15 @@
 import { SiteFooter } from "@/components/layout/SiteFooter";
-import { FeatureBento } from "@/components/landing/FeatureBento";
 import { Hero } from "@/components/landing/Hero";
-import { LiveDemo } from "@/components/landing/LiveDemo";
 import {
   Comparison,
   ExampleMarquee,
+  FeatureBento,
   FinalCta,
+  LiveDemo,
   SectionHead,
   StepsRail,
   TrustGrid,
-} from "@/components/landing/Sections";
+} from "@/components/landing/Lazy";
 
 export default function Home() {
   return (
