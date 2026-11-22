@@ -1,0 +1,25 @@
+{
+  "name": "@intruva/engine",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Intruva prompt intelligence engine: task classification, context diagnosis, optimization, intent-preservation checks, and on-device security scanning. Pure TypeScript, no runtime dependencies.",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts",
+    "./contracts": "./src/contracts.ts",
+    "./engine/analyze": "./src/engine/analyze.ts",
+    "./engine/optimize": "./src/engine/optimize.ts",
+    "./engine/taxonomy": "./src/engine/taxonomy.ts",
+    "./security/scan": "./src/security/scan.ts",
+    "./samples": "./src/samples.ts"
+  },
+  "scripts": {
+    "test": "node --import tsx --test test/*.test.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "tsx": "^4.20.0",
+    "typescript": "^5"
+  }
+}

@@ -1,12 +1,13 @@
 {
-  "name": "web",
+  "name": "@intruva/web",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "clsx": "^2.1.1",
@@ -15,7 +16,8 @@
     "motion": "^14.14.0",
     "next": "16.4.6",
     "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react-dom": "19.3.0",
+    "@intruva/engine": "*"
   },
   "devDependencies": {
     "@tailwindcss/turbopack": "4.3.3",

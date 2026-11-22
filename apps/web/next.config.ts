@@ -1,3 +1,4 @@
+import path from "node:path";
 import type { NextConfig } from "next";
 
 /**
@@ -8,11 +9,15 @@ import type { NextConfig } from "next";
  */
 const nextConfig: NextConfig = {
   output: "export",
+  // The shared engine ships TypeScript source; let Next compile it.
+  transpilePackages: ["@intruva/engine"],
   trailingSlash: true,
   images: { unoptimized: true },
   poweredByHeader: false,
   reactStrictMode: true,
   turbopack: {
+    // Monorepo: resolve workspace packages from the repository root.
+    root: path.resolve(__dirname, "../.."),
     rules: {
       "*.css": {
         loaders: ["@tailwindcss/turbopack"],

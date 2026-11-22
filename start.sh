@@ -89,9 +89,10 @@ fi
 port_in_use "$PORT" && fail "Port $PORT is already in use. Run ./stop.sh, free the port, or use --port <n>."
 
 # --------------------------------------------------------------- dependencies
-cd "$WEB_DIR"
+# npm workspaces: one install at the repository root covers every package.
+cd "$ROOT"
 if [[ ! -d node_modules ]] || [[ package-lock.json -nt node_modules/.package-lock.json ]]; then
-  info "Installing web dependencies (first run can take a minute)…"
+  info "Installing dependencies for all workspaces (first run can take a minute)…"
   npm ci --no-audit --no-fund --loglevel=error || npm install --no-audit --no-fund --loglevel=error
   ok "Dependencies installed"
 else
@@ -123,6 +124,7 @@ else
 fi
 
 # -------------------------------------------------------------------- web app
+cd "$WEB_DIR"
 export PORT NEXT_TELEMETRY_DISABLED=1
 
 if [[ "$MODE" == "prod" ]]; then
