@@ -81,8 +81,13 @@ export default function PrivacyPage() {
           <h2 className="text-xl font-semibold text-fg">Coming next</h2>
           <ul className="mt-4 space-y-2.5 text-[0.95rem] leading-relaxed text-fg-soft">
             <li><strong className="font-medium text-fg">AI-assisted engine.</strong> Deeper diagnosis via a model provider, with explicit disclosure before any prompt leaves your device.</li>
-            <li><strong className="font-medium text-fg">Browser extension.</strong> Optimize inside ChatGPT, Claude and Gemini. Reads the composer only when you click.</li>
-            <li><strong className="font-medium text-fg">Developer API.</strong> The same analyze, optimize and scan pipeline over REST.</li>
+            <li><strong className="font-medium text-fg">Team policies.</strong> Shared rules for what must never be sent to an AI tool.</li>
+            <li>
+              The <Link href="/developers#extension" className="text-aqua-300 hover:underline">Chrome extension</Link>,{" "}
+              <Link href="/developers#api" className="text-aqua-300 hover:underline">developer API</Link> and{" "}
+              <Link href="/developers#mcp" className="text-aqua-300 hover:underline">MCP server</Link> follow the same rules:
+              on-device by default, no prompt storage, explicit disclosure before anything is sent.
+            </li>
           </ul>
         </section>
 

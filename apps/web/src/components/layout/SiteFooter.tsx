@@ -30,10 +30,11 @@ export function SiteFooter() {
           ]}
         />
         <FooterCol
-          title="Coming next"
+          title="Developers"
           links={[
-            ["/privacy#roadmap", "Browser extension"],
-            ["/privacy#roadmap", "Developer API"],
+            ["/developers#api", "Developer API"],
+            ["/developers#mcp", "MCP server"],
+            ["/developers#extension", "Chrome extension"],
           ]}
         />
       </div>

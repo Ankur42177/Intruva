@@ -1,6 +1,7 @@
 "use client";
 
 import { AnimatePresence, m } from "motion/react";
+import dynamic from "next/dynamic";
 import { useSearchParams } from "next/navigation";
 import { useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import { CloudOff, FileWarning, FlaskConical, PencilLine, RotateCcw } from "lucide-react";
@@ -24,14 +25,16 @@ import { HANDOFF_KEY } from "@/lib/handoff";
 import { Button } from "../ui/Button";
 import { Disclosure, GlassCard, Pill } from "../ui/primitives";
 import { useToast } from "../ui/Toast";
-import { ClarifyFlow } from "./ClarifyFlow";
 import { ControlStrip } from "./ControlStrip";
-import { DiagnosisView } from "./DiagnosisView";
 import { Highlighted } from "./highlight";
 import { MODE_OPTIONS, TASK_ICONS } from "./options";
-import { PipelineProgress } from "./PipelineProgress";
 import { PromptEditor } from "./PromptEditor";
-import { ResultView } from "./ResultView";
+
+// Post-run screens are code-split: the compose screen (editor + controls) hydrates first.
+const PipelineProgress = dynamic(() => import("./PipelineProgress").then((m) => m.PipelineProgress));
+const DiagnosisView = dynamic(() => import("./DiagnosisView").then((m) => m.DiagnosisView));
+const ClarifyFlow = dynamic(() => import("./ClarifyFlow").then((m) => m.ClarifyFlow));
+const ResultView = dynamic(() => import("./ResultView").then((m) => m.ResultView));
 
 type Phase = "compose" | "running" | "diagnosis" | "clarify" | "result" | "error";
 
