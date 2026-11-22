@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { SiteFooter } from "@/components/layout/SiteFooter";
 import { Workspace } from "@/components/workspace/Workspace";
 
 export const metadata: Metadata = {
@@ -9,9 +10,12 @@ export const metadata: Metadata = {
 
 export default function WorkspacePage() {
   return (
-    <Suspense fallback={<WorkspaceSkeleton />}>
-      <Workspace />
-    </Suspense>
+    <>
+      <Suspense fallback={<WorkspaceSkeleton />}>
+        <Workspace />
+      </Suspense>
+      <SiteFooter />
+    </>
   );
 }
 

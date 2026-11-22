@@ -2,7 +2,7 @@
 
 import { AnimatePresence, m } from "motion/react";
 import { useSearchParams } from "next/navigation";
-import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
+import { useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import { CloudOff, FileWarning, FlaskConical, PencilLine, RotateCcw } from "lucide-react";
 import type {
   AnalysisResult,
@@ -20,6 +20,7 @@ import { ValidationError, classify } from "@/lib/engine/analyze";
 import { BLUEPRINTS } from "@/lib/engine/taxonomy";
 import { SAMPLES, sampleById } from "@/lib/samples";
 import { applyRedactions } from "@/lib/security/scan";
+import { HANDOFF_KEY } from "@/lib/handoff";
 import { Button } from "../ui/Button";
 import { Disclosure, GlassCard, Pill } from "../ui/primitives";
 import { useToast } from "../ui/Toast";
@@ -34,13 +35,11 @@ import { ResultView } from "./ResultView";
 
 type Phase = "compose" | "running" | "diagnosis" | "clarify" | "result" | "error";
 
-export const HANDOFF_KEY = "intruva:handoff";
 
 export function Workspace() {
   const params = useSearchParams();
   const { toast, announce } = useToast();
 
-  const [prompt, setPrompt] = useState("");
   const [task, setTask] = useState<TaskSelection>("auto");
   const [mode, setMode] = useState<OptimizeMode>("quick");
   const [model, setModel] = useState<TargetModel>("generic");
@@ -60,23 +59,33 @@ export function Workspace() {
   const topRef = useRef<HTMLDivElement>(null);
 
   /* ------------------------------------------------ initial prompt handoff */
+  // useSearchParams makes this route client-rendered, so reading sessionStorage
+  // in the initialiser is hydration-safe. The handoff key is removed in an effect
+  // (not here) so Strict Mode's double-invoked initialiser still sees it.
   const sampleParam = params.get("sample");
-  useEffect(() => {
+  const [prompt, setPrompt] = useState(() => {
     const sample = sampleById(sampleParam);
-    if (sample) {
-      setPrompt(sample.prompt);
-      return;
-    }
+    if (sample) return sample.prompt;
     try {
-      const handed = sessionStorage.getItem(HANDOFF_KEY);
-      if (handed) {
-        sessionStorage.removeItem(HANDOFF_KEY);
-        setPrompt(handed);
-      }
+      return sessionStorage.getItem(HANDOFF_KEY) ?? "";
+    } catch {
+      return "";
+    }
+  });
+  useEffect(() => {
+    try {
+      sessionStorage.removeItem(HANDOFF_KEY);
     } catch {
       /* sessionStorage unavailable */
     }
-  }, [sampleParam]);
+  }, []);
+  // A different ?sample= while mounted: adjust state during render (no effect).
+  const [seenSample, setSeenSample] = useState(sampleParam);
+  if (sampleParam !== seenSample) {
+    setSeenSample(sampleParam);
+    const sample = sampleById(sampleParam);
+    if (sample) setPrompt(sample.prompt);
+  }
 
   /* --------------------------------------------- live, local-only signals */
   const deferred = useDeferredValue(prompt);
@@ -119,8 +128,9 @@ export function Workspace() {
   };
 
   /* ----------------------------------------------------------------- runs */
-  const runOptimize = useCallback(
-    async (opts: { mode?: OptimizeMode; answers?: ClarificationAnswer[]; prior?: AnalysisResult; text?: string; eng?: Engine } = {}) => {
+  async function runOptimize(
+    opts: { mode?: OptimizeMode; answers?: ClarificationAnswer[]; prior?: AnalysisResult; text?: string; eng?: Engine } = {},
+  ) {
       const useMode = opts.mode ?? mode;
       const text = opts.text ?? prompt;
       const ctrl = begin(opts.prior ? ["optimize", "verify"] : ["scan", "classify", "diagnose", "optimize", "verify"]);
@@ -138,13 +148,9 @@ export function Workspace() {
       } catch (e) {
         handleError(e, () => runOptimize(opts), "compose");
       }
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [mode, prompt, task, model, engine],
-  );
+  }
 
-  const runAnalyze = useCallback(
-    async (text = prompt, eng: Engine = engine) => {
+  async function runAnalyze(text = prompt, eng: Engine = engine) {
       const ctrl = begin(["scan", "classify", "diagnose"]);
       try {
         const a = await intruva.analyze(
@@ -160,10 +166,7 @@ export function Workspace() {
       } catch (e) {
         handleError(e, () => runAnalyze(text, eng), "compose");
       }
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [prompt, task, model, engine],
-  );
+  }
 
   const run = () => (mode === "deep" ? runAnalyze() : runOptimize());
 

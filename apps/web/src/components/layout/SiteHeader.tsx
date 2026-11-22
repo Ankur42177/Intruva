@@ -4,7 +4,7 @@ import { AnimatePresence, m } from "motion/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { ArrowRight, Menu, Sparkles, Wind, X } from "lucide-react";
+import { ArrowRight, Menu, Sparkles, Wind, WindArrowDown, X } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { ButtonLink } from "../ui/Button";
 import { Logo } from "./Logo";
@@ -23,7 +23,13 @@ export function SiteHeader() {
   const inApp = pathname.startsWith("/workspace");
   const [scrolled, setScrolled] = useState(false);
   const [menu, setMenu] = useState(false);
-  const { pref, setPref } = useMotionPref();
+  const { setPref, animate, osReduced } = useMotionPref();
+  const toggleMotion = () => setPref(animate ? "reduced" : "full");
+  const motionTitle = animate
+    ? "Animations on. Click to reduce motion"
+    : osReduced
+      ? "Reduced motion (from your system setting). Click to turn animations on"
+      : "Reduced motion. Click to turn animations on";
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -80,18 +86,19 @@ export function SiteHeader() {
           <div className="ml-auto flex items-center gap-2">
             <button
               type="button"
-              onClick={() => setPref(pref === "reduced" ? "system" : "reduced")}
-              aria-pressed={pref === "reduced"}
-              title={pref === "reduced" ? "Low motion is on" : "Turn on low motion"}
+              onClick={toggleMotion}
+              aria-pressed={animate}
+              title={motionTitle}
               className={cn(
-                "hidden size-9 items-center justify-center rounded-full border transition-colors sm:inline-flex",
-                pref === "reduced"
-                  ? "border-aqua-400/40 bg-aqua-400/10 text-aqua-300"
-                  : "border-white/10 text-fg-muted hover:text-fg",
+                "hidden h-9 items-center gap-1.5 rounded-full border px-3 text-xs transition-colors sm:inline-flex",
+                animate
+                  ? "border-white/10 text-fg-muted hover:text-fg"
+                  : "border-warn/30 bg-warn-soft text-warn hover:bg-warn/15",
               )}
             >
-              <Wind className="size-4" aria-hidden />
-              <span className="sr-only">Low motion mode</span>
+              {animate ? <Wind className="size-4" aria-hidden /> : <WindArrowDown className="size-4" aria-hidden />}
+              <span className="hidden lg:inline">{animate ? "Motion on" : "Motion off"}</span>
+              <span className="sr-only lg:hidden">Animations</span>
             </button>
             {inApp ? (
               <EngineIndicator />
@@ -148,14 +155,12 @@ export function SiteHeader() {
               ))}
               <button
                 type="button"
-                onClick={() => setPref(pref === "reduced" ? "system" : "reduced")}
-                aria-pressed={pref === "reduced"}
+                onClick={toggleMotion}
+                aria-pressed={animate}
                 className="flex items-center justify-between rounded-xl px-4 py-3.5 text-left text-lg text-fg-soft hover:bg-white/[0.05]"
               >
-                Low motion
-                <span className={cn("text-sm", pref === "reduced" ? "text-aqua-300" : "text-fg-muted")}>
-                  {pref === "reduced" ? "On" : "Off"}
-                </span>
+                Animations
+                <span className={cn("text-sm", animate ? "text-aqua-300" : "text-warn")}>{animate ? "On" : "Off"}</span>
               </button>
               <ButtonLink
                 href="/workspace"

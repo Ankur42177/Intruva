@@ -3,7 +3,7 @@ import { Logo } from "./Logo";
 
 export function SiteFooter() {
   return (
-    <footer className="relative mt-24 border-t border-white/[0.06]">
+    <footer className="relative mt-24 border-t border-white/[0.06] bg-ink-950/40 backdrop-blur-sm">
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 md:grid-cols-[1.4fr_1fr_1fr_1fr] lg:px-8">
         <div>
           <Logo />
@@ -36,6 +36,20 @@ export function SiteFooter() {
             ["/privacy#roadmap", "Developer API"],
           ]}
         />
+      </div>
+
+      {/* Credits bar */}
+      <div className="border-t border-white/[0.06]">
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-4 py-6 text-xs text-fg-muted sm:flex-row sm:px-6 lg:px-8">
+          <p className="text-center sm:text-left">
+            Designed and developed by <span className="font-medium text-fg-soft">Ankur</span>
+            <span className="mx-2 text-fg-faint" aria-hidden>
+              ·
+            </span>
+            Handled by <span className="font-medium text-aurora">ravenclaw_007 LLC</span>
+          </p>
+          <p className="text-fg-faint">© {new Date().getFullYear()} Intruva. All rights reserved.</p>
+        </div>
       </div>
     </footer>
   );
