@@ -81,6 +81,7 @@ Copy `.env.example` to `apps/web/.env.local` if you need any of these. All are o
 |---|---|---|
 | `NEXT_PUBLIC_INTRUVA_API_URL` | *(empty)* | Empty means demo mode (engine in the browser). When set, the workspace calls the API, and the header indicator switches to "Live engine". |
 | `NEXT_PUBLIC_INTRUVA_API_PUBLIC_URL` | placeholder | Base URL shown in the code samples on `/developers`. |
+| `NEXT_PUBLIC_SITE_URL` | `https://intruva.pages.dev` | Public site origin used in the copy-paste download commands on `/developers`. |
 | `NEXT_PUBLIC_FEEDBACK_URL` | *(empty)* | Shows a "Did this help?" card that links to your form with `rating`, `task` and `mode` only. It never includes prompt text. |
 
 ## Troubleshooting

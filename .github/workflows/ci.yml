@@ -1,0 +1,63 @@
+# CI: typecheck, test, lint, and build every workspace on PRs and pushes to main.
+# The web build also packages the MCP server downloads (apps/web/scripts/bundle-downloads.mjs).
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Typecheck, test, lint, build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      NEXT_TELEMETRY_DISABLED: "1"
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install
+        run: npm ci --no-audit --no-fund
+
+      - name: Typecheck
+        run: npm run typecheck --workspaces --if-present
+
+      - name: Test
+        run: npm test --workspaces --if-present
+
+      - name: Lint (web)
+        run: npm run lint -w @intruva/web
+
+      - name: Build
+        run: npm run build --workspaces --if-present
+
+      - name: Check static export
+        run: |
+          test -f apps/web/out/index.html
+          test -f apps/web/out/_headers
+          test -f apps/web/out/downloads/manifest.json
+          files=$(find apps/web/out -type f | wc -l)
+          echo "apps/web/out: $files files"
+          if [ "$files" -ge 20000 ]; then echo "::error::$files files exceeds the Cloudflare Pages limit of 20,000"; exit 1; fi
+
+      - name: Upload web build
+        uses: actions/upload-artifact@v7
+        with:
+          name: web-out
+          path: apps/web/out
+          if-no-files-found: error
+          retention-days: 7

@@ -2,6 +2,8 @@
 
 **Prompt intelligence: diagnose what your prompt is missing, keep what you meant, and catch risks before you send it to AI.**
 
+**Live:** <https://intruva.pages.dev> · Developers (API, MCP server, extension): <https://intruva.pages.dev/developers/>
+
 Intruva is not another "make my prompt sound better" rewriter. It:
 
 1. Understands the task and your intent.
@@ -19,6 +21,7 @@ Intruva is not another "make my prompt sound better" rewriter. It:
 ./start.sh          # dev server with hot reload → http://localhost:3001
 ./start.sh --prod   # production static build, served locally
 ./stop.sh           # stop everything start.sh launched
+scripts/deploy.sh   # test, build, deploy to Cloudflare, smoke-check (see DEPLOYMENT.md)
 ```
 
 Requires Node 20.9+. The first run installs dependencies automatically.
@@ -40,6 +43,8 @@ intruva/
 │           ├── api/client.ts    # the single UI ↔ engine seam (demo | remote)
 │           ├── engine/          # demo engine: taxonomy, analysis, optimization
 │           └── security/        # on-device security scanner
+├── scripts/deploy.sh   # one-command deploy to Cloudflare Pages/Workers + smoke checks
+├── .github/workflows/  # ci.yml (verify every PR/push), deploy.yml (deploy main to Cloudflare)
 ├── start.sh / stop.sh  # local run scripts
 └── docs (*.md)         # see below
 ```
@@ -52,7 +57,7 @@ intruva/
 | [`ARCHITECTURE.md`](ARCHITECTURE.md) | Engine pipeline, contracts, client seam, how the backend plugs in |
 | [`DESIGN_SYSTEM.md`](DESIGN_SYSTEM.md) | Liquid-glass tokens, components, motion and accessibility rules |
 | [`UI_WALKTHROUGH.md`](UI_WALKTHROUGH.md) | Screen-by-screen tour of every state, plus the sales demo script |
-| [`DEPLOYMENT.md`](DEPLOYMENT.md) | Free-tier hosting decision (Cloudflare Pages), CI, and the deploy steps |
+| [`DEPLOYMENT.md`](DEPLOYMENT.md) | Hosting (Cloudflare Pages + Workers), verified free-tier limits, manual and automatic deploys, secrets, rollback, post-deploy checklist |
 | [`BACKEND_MAPPING.md`](BACKEND_MAPPING.md) | Field-by-field map from UI to the planned FastAPI endpoints |
 
 Product plan: `prompt_intelligence_product_plan.md` (kept outside the repo).

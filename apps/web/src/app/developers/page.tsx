@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 const API = process.env.NEXT_PUBLIC_INTRUVA_API_PUBLIC_URL || "https://<your-intruva-api>.workers.dev";
 
 // Public site origin used in copy-paste commands (customers run these, so it's the deployed URL).
-const SITE = (process.env.NEXT_PUBLIC_SITE_URL || "https://intruva.onrender.com").replace(/\/$/, "");
+const SITE = (process.env.NEXT_PUBLIC_SITE_URL || "https://intruva.pages.dev").replace(/\/$/, "");
 const MCP_TGZ = `${SITE}/downloads/intruva-mcp.tgz`;
 
 interface DownloadFile {
