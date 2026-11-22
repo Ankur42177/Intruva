@@ -1,0 +1,7 @@
+# Local development only (wrangler dev). Copy to .dev.vars — never commit .dev.vars.
+#
+# Dev-only API key for local testing:
+#   itv_local_dev_only_DO_NOT_USE_IN_PRODUCTION_000000
+# Its SHA-256 hash is below. Never add this hash to the production API_KEYS secret.
+API_KEYS="local-dev:399c848eeb59f08b6aea05de26f16ecad3dcb4ca005d2635c6778c60a650299a"
+ENVIRONMENT="development"

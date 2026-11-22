@@ -1,0 +1,45 @@
+/**
+ * Intruva Developer API — Cloudflare Worker (Workers Free plan compatible).
+ * Config reference: https://developers.cloudflare.com/workers/wrangler/configuration/
+ *
+ * Secrets (never in this file):
+ *   API_KEYS — `label:sha256hex` lines; create with `node scripts/create-api-key.mjs <label>`.
+ */
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "intruva-api",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-11-15",
+
+  // Public URL: https://intruva-api.<account-subdomain>.workers.dev (a custom domain is optional).
+  "workers_dev": true,
+  "preview_urls": false,
+
+  // Privacy: keep only our own structured console logs (request_id, route, status,
+  // latency, key label). Invocation logs are disabled and query strings redacted.
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1,
+    "redact_query_string": true,
+    "logs": { "enabled": true, "invocation_logs": false }
+  },
+
+  // Workers Rate Limiting binding (GA 2025-09-19). Limits are per Cloudflare
+  // location and eventually consistent — a guardrail, not a meter.
+  // Keep RATE_LIMIT_PER_MINUTE / ANON_RATE_LIMIT_PER_MINUTE (used by the
+  // in-isolate fallback and docs) in sync with these numbers.
+  "ratelimits": [
+    { "name": "RATE_LIMITER", "namespace_id": "4201", "simple": { "limit": 60, "period": 60 } },
+    { "name": "ANON_RATE_LIMITER", "namespace_id": "4202", "simple": { "limit": 20, "period": 60 } }
+  ],
+
+  "vars": {
+    "ENVIRONMENT": "production",
+    // Comma-separated. `https://*.intruva.pages.dev` covers Pages preview deployments.
+    "CORS_ORIGINS": "https://intruva.pages.dev,https://*.intruva.pages.dev,http://localhost:3001",
+    // Off by default. Origins listed here may call the API without a key (per-IP limited).
+    "ANONYMOUS_ORIGINS": "",
+    "RATE_LIMIT_PER_MINUTE": "60",
+    "ANON_RATE_LIMIT_PER_MINUTE": "20"
+  }
+}
