@@ -14,4 +14,5 @@ export const Comparison = dynamic(() => import("./Sections").then((m) => m.Compa
 export const ExampleMarquee = dynamic(() => import("./Sections").then((m) => m.ExampleMarquee));
 export const TrustGrid = dynamic(() => import("./Sections").then((m) => m.TrustGrid));
 export const FinalCta = dynamic(() => import("./Sections").then((m) => m.FinalCta));
+export const ComingSoon = dynamic(() => import("./ComingSoon").then((m) => m.ComingSoon));
 export const SectionHead = dynamic(() => import("./Sections").then((m) => m.SectionHead));

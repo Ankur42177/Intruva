@@ -20,6 +20,7 @@ export function SiteFooter() {
             ["/workspace", "Workspace"],
             ["/#features", "Features"],
             ["/#examples", "Examples"],
+            ["/roadmap", "Roadmap"],
           ]}
         />
         <FooterCol

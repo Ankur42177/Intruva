@@ -2,6 +2,7 @@ import { SiteFooter } from "@/components/layout/SiteFooter";
 import { Hero } from "@/components/landing/Hero";
 import {
   Comparison,
+  ComingSoon,
   ExampleMarquee,
   FeatureBento,
   FinalCta,
@@ -65,6 +66,21 @@ export default function Home() {
           />
           <div className="mt-10">
             <ExampleMarquee />
+          </div>
+        </section>
+
+        <section id="coming" aria-label="What's coming" className="scroll-mt-20 pt-28 sm:pt-36">
+          <SectionHead
+            kicker="What's coming"
+            title={
+              <>
+                The pilot is <span className="font-display italic text-aurora">just</span> the start.
+              </>
+            }
+            sub="Here's what we're building next, straight from our roadmap and shaped by pilot customers."
+          />
+          <div className="mt-10">
+            <ComingSoon />
           </div>
         </section>
 
